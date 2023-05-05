@@ -10,7 +10,22 @@ def connect_db(app):
     """ connects database to provided flask app """
     db.app = app
     db.init_app(app)
-    
+
+def states_list():
+    return ["", "Alaska", "Alabama", "Arkansas", "American Samoa", "Arizona", 
+            "California", "Colorado", "Connecticut", "District ", "of Columbia", 
+            "Delaware", "Florida", "Georgia", "Guam", "Hawaii", "Iowa", "Idaho", 
+            "Illinois", "Indiana", "Kansas", "Kentucky", "Louisiana", "Massachusetts", 
+            "Maryland", "Maine", "Michigan", "Minnesota", "Missouri", "Mississippi", 
+            "Montana", "North Carolina", "North Dakota", "Nebraska", "New Hampshire", 
+            "New Jersey", "New Mexico", "Nevada", "New York", "Ohio", "Oklahoma", 
+            "Oregon", "Pennsylvania", "Puerto Rico", "Rhode Island", "South Carolina", 
+            "South Dakota", "Tennessee", "Texas", "Utah", "Virginia", "Virgin Islands", 
+            "Vermont", "Washington", "Wisconsin", "West Virginia", "Wyoming"]
+
+def type_list():
+    return ['', 'micro', 'nano', 'regional', 'brewpub', 'large', 'planning',
+            'bar', 'contract', 'proprietor']
 
 class User(db.Model):
     """ User model """
@@ -60,6 +75,19 @@ class User(db.Model):
 
         db.session.add(user)
         return user
+    
+    @classmethod
+    def authenticate(cls, username, password):
+        """ Authenticate user """
+
+        user = cls.query.filter_by(username=username).first()
+
+        if user:
+            is_auth = bcrypt.check_password_hash(user.password, password)
+            if is_auth:
+                return user
+        
+        return False
 
 class Brewery(db.Model):
     """ Brewery model """
