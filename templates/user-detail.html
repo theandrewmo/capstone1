@@ -1,10 +1,9 @@
 {% extends 'base.html' %}
-
 {% block content %}
 
 <div class="row justify-content-center mb-4"> 
     <div class="col-md-7">
-        <h2>Join HoppyHour</h2>
+        <h2>Edit Profile</h2>
         <form method="POST">
             {{ form.hidden_tag() }}
 
@@ -13,11 +12,17 @@
                 <span class="text-danger">{{error}}</span>
                 {% endfor %}
                 {{field.label}}
+                {% if field.id == 'state' or field.id == 'fav_type' %}
+                {{ field(class='form-select') }}
+                {% else %}
                 {{ field(class='form-control') }}
+                {% endif %}
             {% endfor %}
-            <button class="btn btn-primary my-2">Sign me up!</button>
+            <button class="btn btn-primary my-2">Save changes!</button>
+            <a href="/" class="btn btn-secondary">Cancel</a>
         </form>
     </div>
 </div>
+
 
 {% endblock %}

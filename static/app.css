@@ -1,0 +1,8 @@
+.remove-under {
+    text-decoration: none;
+}
+
+#hero {
+    background-image: url('https://images.unsplash.com/photo-1625264412785-7c94942908a5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2066&q=80');
+    background-size: cover;
+}

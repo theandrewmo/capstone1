@@ -3,7 +3,7 @@
 {% block content %}
 
 <div class="row justify-content-center"> 
-    <div class="col-md-7">
+    <div class="col-md-7 text-center">
         <h2>Welcome Back!</h2>
         <form method="POST">
             {{ form.hidden_tag() }}
@@ -12,10 +12,9 @@
                 {% for error in field.errors %}
                 <span class="text-danger">{{error}}</span>
                 {% endfor %}
-                {{field.label}}
-                {{ field(placeholder=field.label.text, class='form-control') }}
+                {{ field(placeholder=field.label.text, class='form-control my-3') }}
             {% endfor %}
-            <button class="btn btn-primary">Login</button>
+            <button class="btn btn-primary my-2">Login</button>
         </form>
         <a href="/signup">Don't have an account yet? Sign up</a>
     </div>

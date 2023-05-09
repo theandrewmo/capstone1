@@ -18,3 +18,13 @@ class LoginForm(FlaskForm):
 
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[Length(min=6)])
+
+class SearchForm(FlaskForm):
+    """ Form for searching breweries """
+
+    term = StringField('Search Term')
+
+class SearchTypeForm(FlaskForm):
+    """ Form for choosing search type """
+
+    search_type = SelectField('Search Type')

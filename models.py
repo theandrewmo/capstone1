@@ -27,6 +27,9 @@ def type_list():
     return ['', 'micro', 'nano', 'regional', 'brewpub', 'large', 'planning',
             'bar', 'contract', 'proprietor']
 
+def choice_list():
+    return ['by keyword', 'by city', 'by distance', 'by name', 'by state', 'by type']
+
 class User(db.Model):
     """ User model """
 

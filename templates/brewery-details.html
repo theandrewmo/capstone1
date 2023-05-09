@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container text-center">
+    <div class="my-4">
+        <h3>{{ brewery.name }}</h6>
+        <p>Brewery Type: {{ brewery.brewery_type }}</p>
+        <p>{{ brewery.city }}, {{ brewery.state_province }} {{brewery.postal_code}}</p>
+        <p>{{ brewery.country }}</p>
+        <a href="{{ brewery.website_url }}" target="_blank">{{ brewery.website_url }}</a>
+    </div>
+    <div class="my-4">
+        <h4>Reviews</h4>
+    </div>
+</div>
+
+
+{% endblock %}

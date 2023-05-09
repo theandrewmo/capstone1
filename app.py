@@ -1,12 +1,13 @@
-import os
+import os, requests, json
 
 from flask import Flask, render_template, request, flash, redirect, session, g 
 # from sqlalchemy.exc import IntegrityError
-from models import db, connect_db, User, Brewery, Review, states_list, type_list
-from forms import UserAddForm, LoginForm
+from models import db, connect_db, User, Brewery, Review, states_list, type_list, choice_list
+from forms import UserAddForm, LoginForm, SearchForm, SearchTypeForm
 from config import Config, DevelopmentConfig, ProductionConfig, TestingConfig
 
 CURR_USER_KEY = 'curr_user'
+BASE_URL = 'https://api.openbrewerydb.org/v1/breweries'
 
 app = Flask(__name__)
 app.app_context().push()
@@ -20,7 +21,7 @@ connect_db(app)
 
 
 ##############################################################################
-# User signup/login/logout
+# User signup/login/logout/edit
 
 @app.before_request
 def add_user_to_g():
@@ -64,9 +65,11 @@ def signup():
             )
             db.session.commit()
         except:
+            flash('signup failed', 'danger')
             return render_template('signup.html', form=form)
 
         do_login(user)
+        flash('signup successful', 'success')
         return redirect('/')
 
     else:
@@ -83,7 +86,11 @@ def login():
 
         if user:
             do_login(user)
+            flash('login successful', 'success')
             return redirect('/')
+        
+        else:
+            flash('unsuccessful login', 'danger')
 
     return render_template('login.html', form=form)
 
@@ -95,10 +102,61 @@ def logout():
 
     return redirect('/login')
 
-@app.route('/')
+@app.route('/edit', methods=['GET', 'POST'])
+def get_user():
+    """ show user detail """
+
+    user = User.query.get_or_404(g.user.id)
+    form = UserAddForm(obj=user)
+    form.state.choices = states_list()
+    form.fav_type.choices = type_list()
+
+    if form.validate_on_submit():
+        user = User.authenticate(form.username.data,
+                                 form.password.data)
+        if user:
+            user.username=form.username.data,
+            user.email=form.email.data,    
+            user.city=form.city.data,
+            user.state=form.state.data,
+            user.postal_code=form.postal_code.data,
+            user.fav_type=form.fav_type.data
+            db.session.commit()
+
+            flash('User profile updated successfully', 'success')
+            return redirect('/edit')
+    
+    return render_template('user-detail.html', form=form)
+
+
+##############################################################################
+# Breweries routes
+
+@app.route('/breweries/<brewery_id>')
+def show_breweries(brewery_id):
+
+    try: 
+        response = requests.get(f'{BASE_URL}/{brewery_id}')
+        if response.status_code == 200:
+            brewery = response.json()
+
+    except Exception as e:
+        print(e)
+        return '<p>error</p>'
+
+    return render_template('brewery-details.html', brewery=brewery)
+
+
+@app.route('/', methods=['GET','POST'])
 def index():
     """ Homepage for Hoppy Hour """
 
+    form = SearchTypeForm()
+    form.search_type.choices = choice_list()
+    form2 = SearchForm()
 
-    return render_template('base.html')
+    if g.user:
+        return render_template('home.html', form=form, form2=form2)
+
+    return render_template('home.html', form=form, form2=form2)
 
