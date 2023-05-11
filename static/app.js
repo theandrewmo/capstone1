@@ -18,8 +18,7 @@ $(function() {
     const typeList = ['', 'micro', 'nano', 'regional', 'brewpub', 'large', 'planning',
         'bar', 'contract', 'proprietor']
     
-
-    if (!sessionStorage.getItem('latitude') && !sessionStorage.getItem('longitude') && 'geolocation' in navigator) {
+    function getLocation() {
         navigator.geolocation.getCurrentPosition(
             function success(position) {
                 sessionStorage.setItem('latitude', position.coords.latitude);
@@ -31,6 +30,11 @@ $(function() {
             {enableHighAccuracy: false}
         )
     }
+
+
+    if (!sessionStorage.getItem('latitude') && !sessionStorage.getItem('longitude') && 'geolocation' in navigator) {
+        getLocation()
+    }
     else if (sessionStorage.getItem('latitude') && sessionStorage.getItem('longitude')) {
         console.log('Location found in session')
     }
@@ -41,7 +45,8 @@ $(function() {
     $('#search_type').on('change', (e) => {
         let selection = e.target.value
         if (selection == 'by distance') {
-            $('#term').val(`${sessionStorage.getItem('latitude')},${sessionStorage.getItem('longitude')}`)
+            $('#term').val(`Your saved location`)
+            $('#term').attr('disabled','disabled')
         }
         else if (selection == 'by type' || selection == 'by state') {
            renderSelector(selection)
@@ -88,6 +93,8 @@ $(function() {
             }
             if (way_to_search == 'by_distance') {
                 way_to_search = 'by_dist'
+                term = `${sessionStorage.getItem('latitude')},${sessionStorage.getItem('longitude')}`
+
                 try {
                     const response = await axios({
                         url: `${base_url}/`,
@@ -97,7 +104,6 @@ $(function() {
                         }
                     })
                     $('.results').empty()
-                    $('#term').val('')
 
                     Object.entries(response.data).forEach((entry) => {
                         const [key, value] = entry;
@@ -155,7 +161,10 @@ $(function() {
     })
 
     function renderBrewery(brewery) {
-        $('.results').append(`<p><a href='/breweries/${brewery.id}'>${brewery.name}</a><span>${brewery.city},${brewery.state}</span></p>`)
+        $('#results-header').removeClass('d-none')
+        $('.results').append(
+            `<h5><a href='/breweries/${brewery.id}'>${brewery.name}</a></h5>
+            <p>${brewery.city}, ${brewery.state}</p>`)
     
     }
 

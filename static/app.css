@@ -2,7 +2,17 @@
     text-decoration: none;
 }
 
-#hero {
-    background-image: url('https://images.unsplash.com/photo-1625264412785-7c94942908a5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2066&q=80');
+.hero {
+    background-image: url('https://images.unsplash.com/photo-1612528443702-f6741f70a049?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1760&q=80');
+    background-size: cover;
+}
+
+.hero2 {
+    background-image: url('https://images.unsplash.com/photo-1578575737417-7f4ca1df16cb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MzR8fGJyZXdlcnl8ZW58MHwwfDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60');
+    background-size: cover;
+}
+
+.hero3 {
+    background-image: url('https://images.unsplash.com/photo-1597822738124-151fb72dcb79?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80');
     background-size: cover;
 }

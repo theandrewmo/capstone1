@@ -3,7 +3,7 @@
 
 <div class="row justify-content-center text-white hero3"> 
     <div class="col-md-7 my-4">
-        <h2 class="text-center">Edit Profile</h2>
+        <h2 class="text-center">Leave a Review</h2>
         <form method="POST">
             {{ form.hidden_tag() }}
 
@@ -12,7 +12,7 @@
                 <span class="text-danger">{{error}}</span>
                 {% endfor %}
                 {{field.label}}
-                {% if field.id == 'state' or field.id == 'fav_type' %}
+                {% if field.id == 'rating' %}
                 {{ field(class='form-select') }}
                 {% else %}
                 {{ field(class='form-control') }}

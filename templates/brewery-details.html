@@ -2,18 +2,34 @@
 
 {% block content %}
 
-<div class="container text-center">
-    <div class="my-4">
-        <h3>{{ brewery.name }}</h6>
-        <p>Brewery Type: {{ brewery.brewery_type }}</p>
-        <p>{{ brewery.city }}, {{ brewery.state_province }} {{brewery.postal_code}}</p>
-        <p>{{ brewery.country }}</p>
-        <a href="{{ brewery.website_url }}" target="_blank">{{ brewery.website_url }}</a>
+<div class="row justify-content-center text-white hero2">
+        <div class="col-md-7 my-4 text-center">
+            <h2>{{ brewery.name }}</h2>
+            <p>Brewery Type: {{ brewery.brewery_type }}</p>
+            <p>{{ brewery.city }}, {{ brewery.state_province }} {{brewery.postal_code}}</p>
+            <p>{{ brewery.country }}</p>
+            <a class="text-white" href="{{ brewery.website_url }}" target="_blank">{{ brewery.website_url }}</a>
+        </div>
     </div>
-    <div class="my-4">
-        <h4>Reviews</h4>
-    </div>
+   
 </div>
+<div class="container text-center my-4">
+    <h4>Reviews</h4>
+    {% for review in brewery_reviews %}
+        <div class="my-5 mx-2 bg-light border border-dark rounded">
+            {% for num in range(review.rating) %}
+            <span><i class="fa-regular fa-star"></i></span>
+            {% endfor %}
+            <h5>{{ review.rating }}</h5>
+            <p>{{ review.description }}</p> 
+            <p class="fst-italic">{{ review.user.username }} - {{review.timestamp}}</p>
+        </div>
+    
+    {% endfor %}
+    <a class="btn btn-warning" href='/review/{{brewery.id}}'  
+    >Leave a review</a>
+</div>
+
 
 
 {% endblock %}

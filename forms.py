@@ -28,3 +28,9 @@ class SearchTypeForm(FlaskForm):
     """ Form for choosing search type """
 
     search_type = SelectField('Search Type')
+
+class ReviewForm(FlaskForm):
+    """ Form for reviewing a brewery """
+
+    rating = SelectField('Rating')
+    description = TextAreaField('Description')

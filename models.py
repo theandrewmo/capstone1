@@ -1,5 +1,6 @@
 """ SQLAlchemy models for HoppyHour """
 
+from datetime import datetime
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
 
@@ -29,6 +30,9 @@ def type_list():
 
 def choice_list():
     return ['by keyword', 'by city', 'by distance', 'by name', 'by state', 'by type']
+
+def rating_list():
+    return [None, 1, 2, 3, 4, 5]
 
 class User(db.Model):
     """ User model """
@@ -91,6 +95,25 @@ class User(db.Model):
                 return user
         
         return False
+    
+class UserLocation(db.Model):
+    """ Location model """
+
+    __tablename__ = 'user_location'
+
+    id = db.Column(db.Integer,
+                   primary_key=True)
+
+    latitude = db.Column(db.String(50))
+
+    longitude = db.Column(db.String(50))
+
+    user_id = db.Column(db.Integer, 
+                        db.ForeignKey('users.id', ondelete='CASCADE'))
+    
+    def __repr__(self):
+        return f'<UserLocation user: {self.user_id}, lat: {self.latitude}, long: {self.longitude}>'
+    
 
 class Brewery(db.Model):
     """ Brewery model """
@@ -98,7 +121,7 @@ class Brewery(db.Model):
     __tablename__ = 'breweries'
     
     id = db.Column(db.Integer,
-                           primary_key=True)
+                   primary_key=True)
     
     name = db.Column(db.String(100),
                      nullable=False)
@@ -119,11 +142,15 @@ class Brewery(db.Model):
 
     url = db.Column(db.Text)
 
+    api_id = db.Column(db.String(100))
+
     def __repr__(self):
         return f'<Brewery {self.name} {self.brewery_type}>'
 
 class Review(db.Model):
     """ Review model """
+
+    __tablename__ = 'reviews'
 
     id = db.Column(db.Integer,
                            primary_key=True)
@@ -132,8 +159,16 @@ class Review(db.Model):
 
     description = db.Column(db.Text)
 
+    timestamp = db.Column(db.DateTime,
+                          nullable=False,
+                          default=datetime.utcnow())
+
     user_id = db.Column(db.Integer,
-                        db.ForeignKey('users.id', ondelete='cascade'))
+                        db.ForeignKey('users.id', ondelete='CASCADE'))
 
     brewery_id = db.Column(db.Integer,
-                        db.ForeignKey('breweries.id', ondelete='cascade')) 
+                        db.ForeignKey('breweries.id', ondelete='CASCADE'))
+
+    brewery = db.relationship("Brewery", backref='review') 
+
+    user = db.relationship("User", backref='review')

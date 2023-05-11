@@ -2,8 +2,8 @@ import os, requests, json
 
 from flask import Flask, render_template, request, flash, redirect, session, g 
 # from sqlalchemy.exc import IntegrityError
-from models import db, connect_db, User, Brewery, Review, states_list, type_list, choice_list
-from forms import UserAddForm, LoginForm, SearchForm, SearchTypeForm
+from models import db, connect_db, User, Brewery, Review, states_list, type_list, choice_list, rating_list
+from forms import UserAddForm, LoginForm, SearchForm, SearchTypeForm, ReviewForm
 from config import Config, DevelopmentConfig, ProductionConfig, TestingConfig
 
 CURR_USER_KEY = 'curr_user'
@@ -106,6 +106,10 @@ def logout():
 def get_user():
     """ show user detail """
 
+    if not g.user:
+        flash("Access unauthorized. Users can only update their own profile.", "danger")
+        return redirect("/")
+
     user = User.query.get_or_404(g.user.id)
     form = UserAddForm(obj=user)
     form.state.choices = states_list()
@@ -124,7 +128,7 @@ def get_user():
             db.session.commit()
 
             flash('User profile updated successfully', 'success')
-            return redirect('/edit')
+            return redirect('/')
     
     return render_template('user-detail.html', form=form)
 
@@ -142,9 +146,14 @@ def show_breweries(brewery_id):
 
     except Exception as e:
         print(e)
-        return '<p>error</p>'
+        return f'<p>error: {e}</p>'
+    
+    brewery_reviews = []
+    brewery_model = Brewery.query.filter_by(api_id=brewery['id']).first()
+    if brewery_model:
+        brewery_reviews = Review.query.filter_by(brewery_id=brewery_model.id).all()
 
-    return render_template('brewery-details.html', brewery=brewery)
+    return render_template('brewery-details.html', brewery=brewery, brewery_reviews=brewery_reviews)
 
 
 @app.route('/', methods=['GET','POST'])
@@ -155,8 +164,65 @@ def index():
     form.search_type.choices = choice_list()
     form2 = SearchForm()
 
+    recent_reviews = Review.query.order_by(Review.timestamp.desc()).limit(5)
+
     if g.user:
-        return render_template('home.html', form=form, form2=form2)
+        return render_template('home.html', form=form, form2=form2, recent_reviews=recent_reviews)
 
-    return render_template('home.html', form=form, form2=form2)
+    return render_template('home.html', form=form, form2=form2, recent_reviews=recent_reviews)
 
+
+##############################################################################
+#Review routes
+
+@app.route('/review/<brewery_id>', methods=["GET", "POST"])
+def leave_review(brewery_id):
+    """ shows a review form and handles a user review for particular brewery """
+
+    if not g.user:
+        flash("Access unauthorized. Please create a profile in order to leave a review.", "danger")
+        return redirect("/")
+
+    form = ReviewForm()
+    form.rating.choices = rating_list()  
+
+    try: 
+        response = requests.get(f'{BASE_URL}/{brewery_id}')
+        if response.status_code == 200:
+            brewery = response.json()
+
+    except Exception as e:
+        print(e)
+        return '<p>error</p>'
+
+    if form.validate_on_submit():
+        existing_brewery = Brewery.query.filter_by(api_id=brewery_id).first()
+        if not existing_brewery:
+            new_brewery = Brewery(
+                            name=brewery['name'], 
+                            brewery_type=brewery['brewery_type'], 
+                            address=brewery['address_1'], 
+                            city=brewery['city'], 
+                            state_province=brewery['state_province'], 
+                            postal_code=brewery['postal_code'], 
+                            country=brewery['country'], 
+                            phone=brewery['phone'], 
+                            url=brewery['website_url'],
+                            api_id=brewery['id'])
+            db.session.add(new_brewery)
+            db.session.commit()
+            existing_id = new_brewery.id
+
+        else: 
+            existing_id = existing_brewery.id
+
+        user = User.query.get_or_404(g.user.id)
+        review = Review(rating=form.rating.data,
+                        description=form.description.data,
+                        brewery_id=existing_id,
+                        user_id=g.user.id)
+        db.session.add(review)
+        db.session.commit()
+        return redirect(f'/breweries/{brewery_id}')
+
+    return render_template('review-form.html', form=form)
