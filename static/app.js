@@ -140,6 +140,7 @@ $(function() {
             }  
         }
         else {
+            $('.results').empty()
             term = $('#term').val()
             try {
                 const response = await axios({
