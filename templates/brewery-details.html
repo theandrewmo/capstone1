@@ -18,7 +18,7 @@
     {% for review in brewery_reviews %}
         <div class="my-5 mx-2 bg-light border border-dark rounded">
             {% for num in range(review.rating) %}
-            <span><i class="fa-regular fa-star"></i></span>
+            <span><i class="fa-solid fa-star"></i></span>
             {% endfor %}
             <h5>{{ review.rating }}</h5>
             <p>{{ review.description }}</p> 

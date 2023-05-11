@@ -161,7 +161,7 @@ class Review(db.Model):
 
     timestamp = db.Column(db.DateTime,
                           nullable=False,
-                          default=datetime.utcnow())
+                          default=datetime.utcnow)
 
     user_id = db.Column(db.Integer,
                         db.ForeignKey('users.id', ondelete='CASCADE'))

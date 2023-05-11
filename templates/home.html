@@ -31,9 +31,9 @@
         </div> 
     </div>
 </div>
-<div class="container text-center my-4"> 
+<div class="container text-center my-4" id="recent-reviews"> 
     <h4 class="mt-4" id="recent-reviews-header">Recent Reviews</h4>
-    <div class="recent-reviews">
+    <div class="">
         {% for review in recent_reviews %}
         <div class="my-5 mx-2 p-1 bg-light border border-dark rounded">
             <a href="/breweries/{{ review.brewery.api_id }}"><h5>{{ review.brewery.name }}</h5></a>

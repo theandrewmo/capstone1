@@ -80,6 +80,7 @@ $(function() {
 
     $('.find-brewery').on('submit', async function(e) {
         e.preventDefault();
+        $('#recent-reviews').addClass('d-none')
         let term = ''
         let by_type = $('#search_type').val()
         let way_to_search = by_type.replace(/\s+/g, '_')

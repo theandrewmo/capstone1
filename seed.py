@@ -14,5 +14,13 @@ user1 = User.signup('hoppyguy21',
             '94016',
             'micro')
 
+user2 = User.signup('beerdude',
+            'beer@beer.com',
+            'beerdude',    
+            'boulder',
+            'Colorado',
+            '80301',
+            'brewpub')
+
 db.session.commit()
 

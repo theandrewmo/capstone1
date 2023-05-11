@@ -151,7 +151,7 @@ def show_breweries(brewery_id):
     brewery_reviews = []
     brewery_model = Brewery.query.filter_by(api_id=brewery['id']).first()
     if brewery_model:
-        brewery_reviews = Review.query.filter_by(brewery_id=brewery_model.id).all()
+        brewery_reviews = Review.query.filter_by(brewery_id=brewery_model.id).order_by(Review.timestamp.desc()).all()
 
     return render_template('brewery-details.html', brewery=brewery, brewery_reviews=brewery_reviews)
 
