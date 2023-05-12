@@ -44,6 +44,8 @@ $(function() {
 
     $('#search_type').on('change', (e) => {
         let selection = e.target.value
+        if($('#choice')) {$('#choice').remove()}
+        $('#term').removeAttr('disabled').val('').removeClass('d-none')
         if (selection == 'by distance') {
             $('#term').val(`Your saved location`)
             $('#term').attr('disabled','disabled')
@@ -53,11 +55,7 @@ $(function() {
         }
         else if(selection == 'by keyword'|| selection == 'by name' || selection == 'by city') {
             selection = selection.replace(/by /g, 'Enter a ');
-            $('.find-brewery').html(`
-            <input id="csrf_token" name="csrf_token" type="hidden" value="ImFjMGVkMTI3YTBkMzZiMjQ3NzM5MTBhYWFjOTE0MGEyYjlkODdkNjAi.ZFrCSw.8ADKnoCUhqG0zlcq7joG7CA84nU">
-            <input class="form-control text-center" id="term" name="term" placeholder="${selection}" type="text" value="">
-            <button class="btn btn-primary my-3">Search</button>
-            `)
+            $('#term').attr('placeholder', selection)
         } 
     })
 
@@ -69,13 +67,10 @@ $(function() {
         else {
             termHTML = stateList.map(e => `<option value="${e}">${e}</option>`).join('')
         }
-        $('.find-brewery').html(`
-        <input id="csrf_token" name="csrf_token" type="hidden" value="ImFjMGVkMTI3YTBkMzZiMjQ3NzM5MTBhYWFjOTE0MGEyYjlkODdkNjAi.ZFqceA.d8coDIPAtbuErWXHXXfVBu1Z5zc">
-        <select class="form-select text-center" id="choice" name="choice" placeholder="Search Type">
-        ${termHTML}
-        </select>
-        <button class="btn btn-primary my-3">Search</button>
-        `)
+        let newSelector = `<select class="form-select text-center" id="choice" name="choice" placeholder="Search Type">
+                            ${termHTML}
+                            </select>`
+        $('#term').after(newSelector).addClass('d-none')
     }
 
     $('.find-brewery').on('submit', async function(e) {
