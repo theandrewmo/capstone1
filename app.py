@@ -14,6 +14,8 @@ app.app_context().push()
 
 if app.config['ENV'] == 'development':
     app.config.from_object(DevelopmentConfig)
+elif app.config['ENV'] == 'production':
+    app.config.from_object(ProductionConfig)
 else: 
     app.config.from_object(TestingConfig)
 
