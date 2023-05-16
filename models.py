@@ -29,7 +29,7 @@ def type_list():
             'bar', 'contract', 'proprietor']
 
 def choice_list():
-    return ['by keyword', 'by city', 'by distance', 'by name', 'by state', 'by type']
+    return ['by keyword', 'by city', 'by distance', 'by name', 'by state', 'by type', 'get a random brewery']
 
 def rating_list():
     return [None, 1, 2, 3, 4, 5]

@@ -50,6 +50,8 @@ $(function() {
             $('#term').val(`Your saved location`)
             $('#term').attr('disabled','disabled')
         }
+        else if (selection == 'get a random brewery') {
+            $('#term').attr('disabled','disabled')}
         else if (selection == 'by type' || selection == 'by state') {
            renderSelector(selection)
         }
@@ -80,7 +82,7 @@ $(function() {
         let by_type = $('#search_type').val()
         let way_to_search = by_type.replace(/\s+/g, '_')
         if (way_to_search !== 'by_keyword') {
-            if (way_to_search == 'by_state' || way_to_search == 'by_type') {
+            if (way_to_search == 'by_state' || way_to_search == 'by_type'){
                 term = $('#choice').val()
             }
             else {
@@ -93,7 +95,7 @@ $(function() {
 
                 try {
                     const response = await axios({
-                        url: `${base_url}/`,
+                        url: `${base_url}`,
                         method: "GET",
                         params: {
                             by_dist: term
@@ -107,10 +109,27 @@ $(function() {
                         renderBrewery(brewery)
                     })
                 }   
-            catch(e) {
+                catch(e) {
                 console.log(e.message)
+                }
             }
-            }
+            else if (way_to_search == 'get_a_random_brewery') {
+                try {
+                    const response = await axios({
+                        url: `${base_url}/random`,
+                        method: 'GET'
+                    })
+                    $('.results').empty()
+                    Object.entries(response.data).forEach((entry) => {
+                        const [key, value] = entry;
+                        const brewery = value
+                        renderBrewery(brewery)
+                    })
+                }
+                catch(e) {
+                    console.log(e.message)
+                }
+            } 
             else {
                 try {
                     const response = await axios({
