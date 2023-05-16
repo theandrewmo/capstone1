@@ -7,7 +7,7 @@ class Config(object):
     SECRET_KEY = os.environ.get('SECRET_KEY')
 
 class ProductionConfig(Config):
-    pass
+    WTF_CSRF_ENABLED = False
 
 class DevelopmentConfig(Config):
     DEBUG = True
