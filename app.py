@@ -1,7 +1,7 @@
 import os, requests, json
 
 from flask import Flask, render_template, request, flash, redirect, session, g 
-# from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError
 from models import db, connect_db, User, Brewery, Review, states_list, type_list, choice_list, rating_list
 from forms import UserAddForm, LoginForm, SearchForm, SearchTypeForm, ReviewForm
 from config import Config, DevelopmentConfig, ProductionConfig, TestingConfig
@@ -158,7 +158,7 @@ def show_breweries(brewery_id):
     return render_template('brewery-details.html', brewery=brewery, brewery_reviews=brewery_reviews)
 
 
-@app.route('/', methods=['GET','POST'])
+@app.route('/')
 def index():
     """ Homepage for Hoppy Hour """
 
@@ -167,9 +167,6 @@ def index():
     form2 = SearchForm()
 
     recent_reviews = Review.query.order_by(Review.timestamp.desc()).limit(5)
-
-    if g.user:
-        return render_template('home.html', form=form, form2=form2, recent_reviews=recent_reviews)
 
     return render_template('home.html', form=form, form2=form2, recent_reviews=recent_reviews)
 
