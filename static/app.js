@@ -31,7 +31,6 @@ $(function() {
         )
     }
 
-
     if (!sessionStorage.getItem('latitude') && !sessionStorage.getItem('longitude') && 'geolocation' in navigator) {
         getLocation()
     }
@@ -40,6 +39,46 @@ $(function() {
     }
     else {
         console.log('Geolocation not enabled in this browser')
+    }
+
+    let timeoutId;
+
+    $('#term').on('keyup', ()=> {
+        if ($('#search_type').val() == 'by keyword') {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(runAutocomplete, 500)
+        } 
+    });
+
+    async function runAutocomplete(term) {
+        $('#auto').remove()
+        term = $('#term').val()
+        try {
+            const response = await axios({
+                url: `${base_url}autocomplete`,
+                method: "GET",
+                params: {
+                    query: term
+                }
+            })
+            $('#term').after('<div id="auto"></div>')
+            $('#auto').on('click', grabItem)
+            Object.entries(response.data).forEach((entry) => {
+                const [key, value] = entry;
+                const brewery = value
+                renderAutoComplete(brewery)
+            })
+        }   
+        catch(e) {
+            console.log(e.message)
+        }
+    }
+
+    function grabItem(e) {
+        $('#term').val(e.target.innerText)
+        $('#auto').empty()
+        searchByKeyword()
+        $('#term').val('')
     }
 
     $('#search_type').on('change', (e) => {
@@ -75,7 +114,7 @@ $(function() {
         $('#term').after(newSelector).addClass('d-none')
     }
 
-    $('.find-brewery').on('submit', async function(e) {
+    async function searchItem(e) {
         e.preventDefault();
         $('#recent-reviews').addClass('d-none')
         let term = ''
@@ -154,27 +193,34 @@ $(function() {
             }  
         }
         else {
-            $('.results').empty()
-            term = $('#term').val()
-            try {
-                const response = await axios({
-                    url: `${base_url}search/`,
-                    method: "GET",
-                    params: {
-                        query: term
-                    }
-                })
-                Object.entries(response.data).forEach((entry) => {
-                    const [key, value] = entry;
-                    const brewery = value
-                    renderBrewery(brewery)
-                })
+             searchByKeyword()
             }   
-            catch(e) {
-                console.log(e.message)
-            }
-        }    
-    })
+    }   
+
+    async function searchByKeyword() {
+        $('.results').empty()
+        $('#recent-reviews').addClass('d-none')
+        term = $('#term').val()
+        try {
+            const response = await axios({
+                url: `${base_url}search/`,
+                method: "GET",
+                params: {
+                    query: term
+                }
+            })
+            Object.entries(response.data).forEach((entry) => {
+                const [key, value] = entry;
+                const brewery = value
+                renderBrewery(brewery)
+            })
+        }
+        catch(e) {
+            console.log(e.message)
+        }
+    }
+
+    $('.find-brewery').on('submit', searchItem)
 
     function renderBrewery(brewery) {
         $('#results-header').removeClass('d-none')
@@ -183,5 +229,10 @@ $(function() {
             <p>${brewery.city}, ${brewery.state}</p>`)
     
     }
+
+    function renderAutoComplete(brewery) {
+            $('#auto').append(`<p>${brewery.name}</p>`)
+    }
+
 
 })

@@ -2,9 +2,15 @@
     text-decoration: none;
 }
 
+.heading {
+    padding-top: 1.5rem;
+}
+
 .hero {
+    min-height: 45rem;
     background-image: url('https://images.unsplash.com/photo-1612528443702-f6741f70a049?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1760&q=80');
     background-size: cover;
+    background-position: center;
 }
 
 .hero2 {
@@ -15,4 +21,30 @@
 .hero3 {
     background-image: url('https://images.unsplash.com/photo-1597822738124-151fb72dcb79?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80');
     background-size: cover;
+}
+
+.find-brewery {
+    position: relative;
+}
+
+#auto {
+    position: absolute;
+    width: 100%;
+    max-height: 30rem;
+    overflow-y: auto;
+}
+
+#auto p {
+    background-color: white;
+    border: solid;
+    border-color: gray;
+    border-width: .5px;
+    border-radius: 5px;
+    margin: 0px;
+    padding: .5rem;
+    width: 100%;
+}
+
+#auto p:hover {
+    background-color: rgb(134, 134, 134);
 }
