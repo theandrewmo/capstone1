@@ -234,5 +234,28 @@ $(function() {
             $('#auto').append(`<p>${brewery.name}</p>`)
     }
 
+    let map;
 
+    async function initMap() {
+    const { Map } = await google.maps.importLibrary("maps");
+    let location = {lat: parseFloat($('#latitude').val()), lng: parseFloat($('#longitude').val())}
+    if (location.lat && location.lng) {
+        map = new Map($('#map')[0], {
+            center: location,
+            zoom: 12,
+        });
+        let marker = new google.maps.Marker({position:location, map:map})
+    }
+    else {
+        $('#map').addClass('d-flex flex-column border border-primary border-2 align-items-center justify-content-center')
+                .html(`<p>Unable to render map</p>
+                       <p>Coordinates not available</p>
+                    `)
+    }}
+
+    if (window.location.href.match(/\/breweries\/[a-f0-9-]+$/)) {
+        initMap();
+      }
+    
 })
+

@@ -11,8 +11,16 @@
             <a class="text-white" href="{{ brewery.website_url }}" target="_blank">{{ brewery.website_url }}</a>
         </div>
     </div>
-   
+    <input type="hidden" name="latitude" id="latitude" value="{{ brewery.latitude }}">
+    <input type="hidden" name="longitude" id="longitude" value="{{ brewery.longitude }}">
+
 </div>
+<div class="row justify-content-center text-center">
+    <div id="map">
+
+    </div>
+</div>
+
 <div class="container text-center my-4">
     <h4>Reviews</h4>
     {% for review in brewery_reviews %}
