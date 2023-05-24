@@ -1,8 +1,9 @@
 $(function() {
 
+    /** base URL for brewery API */
     const base_url = `https://api.openbrewerydb.org/v1/breweries/`
 
-    
+    /** list of states used for search by state  */
     const stateList = ["", "Alaska", "Alabama", "Arkansas", "American Samoa", "Arizona", 
         "California", "Colorado", "Connecticut", "District ", "of Columbia", 
         "Delaware", "Florida", "Georgia", "Guam", "Hawaii", "Iowa", "Idaho", 
@@ -14,10 +15,14 @@ $(function() {
         "South Dakota", "Tennessee", "Texas", "Utah", "Virginia", "Virgin Islands", 
         "Vermont", "Washington", "Wisconsin", "West Virginia", "Wyoming"]
         
-    
+    /** list of brewery types used for search by type  */
     const typeList = ['', 'micro', 'nano', 'regional', 'brewpub', 'large', 'planning',
         'bar', 'contract', 'proprietor']
-    
+
+    /** This function gets the users location from their browser
+     *  if unsuccessful it will return an error message
+     */
+
     function getLocation() {
         navigator.geolocation.getCurrentPosition(
             function success(position) {
@@ -31,29 +36,89 @@ $(function() {
         )
     }
 
-    if (!sessionStorage.getItem('latitude') && !sessionStorage.getItem('longitude') && 'geolocation' in navigator) {
-        getLocation()
-    }
-    else if (sessionStorage.getItem('latitude') && sessionStorage.getItem('longitude')) {
-        console.log('Location found in session')
-    }
-    else {
-        console.log('Geolocation not enabled in this browser')
+    /** helper function to process brewery API response data
+     * takes response data and dataType as parameters, turns response data into an results object to be rendered
+     * dataType is in regards to autocomplete or normal results
+     */
+
+    function processBreweries(data, dataType){
+        const breweriesResults = Object.values(data).map((brewery) => {
+            return createBrewery(brewery, dataType)
+        })
+        return breweriesResults;
     }
 
-    let timeoutId;
+    /** adds click listener with grabItem callback function to the auto div, which will hold the autocomplete search results  */
+
+    $('#auto').on('click', grabItem)
+
+    /** add event listener for submission of the search form with callback function searchItem */
+
+    $('.find-brewery').on('submit', searchItem)
+
+    /** store timeout identifier */
+
+ 
+    /** set up event handler for keyup on input field, checks whether search type is by keyword
+     * calls debounced function runAutoComplete
+     */
 
     $('#term').on('keyup', ()=> {
         if ($('#search_type').val() == 'by keyword') {
-            clearTimeout(timeoutId);
-            timeoutId = setTimeout(runAutocomplete, 500)
+            debouncedRunAutoComplete()
         } 
     });
 
-    async function runAutocomplete(term) {
-        $('#auto').remove()
-        term = $('#term').val()
+    /** debounce function that sets up debouncing on a passed in function */
+
+    function debounce(func, delay = 500) {
+        let timeoutId;
+        return (...args) => {
+            clearTimeout(timeoutId)
+            timeoutId = setTimeout(()=> {
+                func(...args)
+            }, delay)
+        }
+    }
+
+    /** assignment of the debounced function, in this case runAutoComplete  */
+
+    const debouncedRunAutoComplete = debounce(runAutoComplete)
+
+    /** helper function that appends the breweries data to a given element in the DOM */
+
+    function renderBreweries(breweries, element) {
+        $(element).empty().append(breweries)
+    }
+
+    /** readies DOM for results by changing display classes and emptying container of any old results */
+
+    function readyForResults() {
+        $('#recent-reviews').addClass('d-none')
+        $('#results-header').removeClass('d-none')
+        $('.results').empty()
+    }        
+
+    /** helper function that takes a brewery object as a parameter, creates and then returns a brewery DOM element. */
+
+    function createBrewery(brewery, dataType) {
+        let breweryElement;
+        if (dataType == 'autoComplete') {
+            breweryElement = $(`<p>${brewery.name}</p>`)
+        }
+        else {
+             breweryElement = `<h5><a href='/breweries/${brewery.id}'>${brewery.name}</a></h5>
+                <p>${brewery.city}, ${brewery.state}</p>`
+            }
+        return breweryElement
+    }
+
+    /** function for autocomplete, removes any existing results from DOM, requests new results from autocomplete endpoint based on seach term. */
+
+    async function runAutoComplete(term) {
         try {
+            $('#auto').empty()
+            term = $('#term').val()
             const response = await axios({
                 url: `${base_url}autocomplete`,
                 method: "GET",
@@ -61,25 +126,33 @@ $(function() {
                     query: term
                 }
             })
-            $('#term').after('<div id="auto"></div>')
-            $('#auto').on('click', grabItem)
-            Object.entries(response.data).forEach((entry) => {
-                const [key, value] = entry;
-                const brewery = value
-                renderAutoComplete(brewery)
-            })
+            const breweries = processBreweries(response.data, 'autoComplete')
+            renderBreweries(breweries, '#auto')
         }   
         catch(e) {
-            console.log(e.message)
+            console.error(e.message)
         }
     }
+
+    /** function for getting the term the user has selected after attempting an autocomplete,
+     *  updates input value to show user what they've selected 
+     *  calls searchByKeyword in order to update the search results 
+     */
 
     function grabItem(e) {
         $('#term').val(e.target.innerText)
         $('#auto').empty()
+        readyForResults()
         searchByKeyword()
         $('#term').val('')
     }
+
+    /** handling selections and searching */
+
+    /** event handler for rendering the various input options depending on the type of search that is currently selected
+     *  the callback function disables inputs when not relevant i.e. saved location, random brewery 
+     *  renders additional input selectors from set options by calling renderSelector when appropriate i.e. by type, by state
+     */
 
     $('#search_type').on('change', (e) => {
         let selection = e.target.value
@@ -100,6 +173,8 @@ $(function() {
         } 
     })
 
+    /** function that renders additional selectors from global arrays for brewery type or state */
+
     function renderSelector(selection) {
         let termHTML = ''
         if (selection == 'by type') {
@@ -114,94 +189,40 @@ $(function() {
         $('#term').after(newSelector).addClass('d-none')
     }
 
+    /** asynchronous function that searches item:
+     *  gathers the currently selected search type, (and term if relevant)
+     */
+
     async function searchItem(e) {
         e.preventDefault();
-        $('#recent-reviews').addClass('d-none')
+        readyForResults();
         let term = ''
         let by_type = $('#search_type').val()
         let way_to_search = by_type.replace(/\s+/g, '_')
-        if (way_to_search !== 'by_keyword') {
+        if (way_to_search == 'by_distance') searchByDistance();
+        else if (way_to_search == 'get_a_random_brewery') getRandomBrewery();
+        else if (way_to_search == 'by_keyword') searchByKeyword();
+        else {
             if (way_to_search == 'by_state' || way_to_search == 'by_type'){
                 term = $('#choice').val()
             }
             else {
                 term = $('#term').val()
                 term = term.replace(/\s+/g, '_')
+            
             }
-            if (way_to_search == 'by_distance') {
-                way_to_search = 'by_dist'
-                term = `${sessionStorage.getItem('latitude')},${sessionStorage.getItem('longitude')}`
-
-                try {
-                    const response = await axios({
-                        url: `${base_url}`,
-                        method: "GET",
-                        params: {
-                            by_dist: term
-                        }
-                    })
-                    $('.results').empty()
-
-                    Object.entries(response.data).forEach((entry) => {
-                        const [key, value] = entry;
-                        const brewery = value
-                        renderBrewery(brewery)
-                    })
-                }   
-                catch(e) {
-                console.log(e.message)
-                }
-            }
-            else if (way_to_search == 'get_a_random_brewery') {
-                try {
-                    const response = await axios({
-                        url: `${base_url}/random`,
-                        method: 'GET'
-                    })
-                    $('.results').empty()
-                    Object.entries(response.data).forEach((entry) => {
-                        const [key, value] = entry;
-                        const brewery = value
-                        renderBrewery(brewery)
-                    })
-                }
-                catch(e) {
-                    console.log(e.message)
-                }
-            } 
-            else {
-                try {
-                    const response = await axios({
-                        url: `${base_url}/`,
-                        method: "GET",
-                        params: {
-                            [way_to_search]: term
-                        }
-                    })
-                    $('.results').empty()
-                    $('#term').val('')
-    
-                    Object.entries(response.data).forEach((entry) => {
-                        const [key, value] = entry;
-                        const brewery = value
-                        renderBrewery(brewery)
-                    })
-                }   
-                catch(e) {
-                    console.log(e.message)
-                }
-            }  
-        }
-        else {
-             searchByKeyword()
-            }   
+            termSearch(way_to_search, term)
+            $('#term').val('')
+        }  
     }   
 
+    /** asynchronous function for searching by keyword
+     *  sends get request to API search endpoint
+     */
+
     async function searchByKeyword() {
-        $('.results').empty()
-        $('#recent-reviews').addClass('d-none')
-        term = $('#term').val()
         try {
+            term = $('#term').val()
             const response = await axios({
                 url: `${base_url}search/`,
                 method: "GET",
@@ -209,30 +230,87 @@ $(function() {
                     query: term
                 }
             })
-            Object.entries(response.data).forEach((entry) => {
-                const [key, value] = entry;
-                const brewery = value
-                renderBrewery(brewery)
-            })
+            const breweries = processBreweries(response.data)
+            renderBreweries(breweries, '.results')
         }
         catch(e) {
-            console.log(e.message)
+            console.error(e.message)
         }
     }
 
-    $('.find-brewery').on('submit', searchItem)
+    /** asynchronous function for searching by distance 
+     *  sends get request to API by_dist endpoint using location data saved in session
+    */
 
-    function renderBrewery(brewery) {
-        $('#results-header').removeClass('d-none')
-        $('.results').append(
-            `<h5><a href='/breweries/${brewery.id}'>${brewery.name}</a></h5>
-            <p>${brewery.city}, ${brewery.state}</p>`)
-    
+    async function searchByDistance() {
+        term = `${sessionStorage.getItem('latitude')},${sessionStorage.getItem('longitude')}`
+        try {
+            const response = await axios({
+                url: `${base_url}`,
+                method: "GET",
+                params: {
+                    by_dist: term
+                }
+            })
+            const breweries = processBreweries(response.data)
+            renderBreweries(breweries, '.results')
+        }   
+        catch(e) {
+            console.error(e.message)
+        }
     }
 
-    function renderAutoComplete(brewery) {
-            $('#auto').append(`<p>${brewery.name}</p>`)
+    /** asynchronous function for searching a random brewery
+     *  sends get request to API "random" endpoint
+    */
+
+    async function getRandomBrewery() {
+        try {
+            const response = await axios({
+                url: `${base_url}/random`,
+                method: 'GET'
+            })
+            const breweries = processBreweries(response.data)
+            renderBreweries(breweries, '.results')
+        }
+        catch(e) {
+            console.error(e.message)
+        }
     }
 
+    /** asynchronous function for searching a brewery based on an input term (city, name, state, type)
+     *  sends get request to API endpoint
+    */
 
+    async function termSearch(way_to_search, term) {
+        try {
+            const response = await axios({
+                url: `${base_url}/`,
+                method: "GET",
+                params: {
+                    [way_to_search]: term
+                }
+            })
+            const breweries = processBreweries(response.data)
+            renderBreweries(breweries, '.results')
+        }   
+        catch(e) {
+            console.error(e.message)
+        }
+    }
+
+    /** check whether location is already stored in session, if not then calls function to get the location and store it
+     * if geolocation not allowed, appropriate message is logged
+     */
+
+    if (!sessionStorage.getItem('latitude') && !sessionStorage.getItem('longitude') && 'geolocation' in navigator) {
+        getLocation()
+    }
+    else if (sessionStorage.getItem('latitude') && sessionStorage.getItem('longitude')) {
+        console.log('Location found in session')
+    }
+    else {
+        console.log('Geolocation not enabled in this browser')
+    }
 })
+
