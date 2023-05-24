@@ -299,6 +299,39 @@ $(function() {
         }
     }
 
+    /** Mapping: uses google maps javascript API to render a map on brewery-details page */
+
+    /** create map variable */
+    let map;
+
+    /** asynchronous function to initialize map object 
+     * sets map location and marker based on latitude and longitude values present in the DOM 
+     * if either value is not present i.e. location, then displays to user that no map is available
+     */
+
+    async function initMap() {
+    const { Map } = await google.maps.importLibrary("maps");
+    let location = {lat: parseFloat($('#latitude').val()), lng: parseFloat($('#longitude').val())}
+    if (location.lat && location.lng) {
+        map = new Map($('#map')[0], {
+            center: location,
+            zoom: 12,
+        });
+        let marker = new google.maps.Marker({position:location, map:map})
+    }
+    else {
+        $('#map').addClass('d-flex flex-column border border-primary border-2 align-items-center justify-content-center')
+                .html(`<p>Unable to render map</p>
+                       <p>Coordinates not available</p>
+                    `)
+    }}
+
+    /** conditional that calls initMap when the window location is the brewery-detail page */
+
+    if (window.location.href.match(/\/breweries\/[a-f0-9-]+$/)) {
+        initMap();
+      }
+
     /** check whether location is already stored in session, if not then calls function to get the location and store it
      * if geolocation not allowed, appropriate message is logged
      */

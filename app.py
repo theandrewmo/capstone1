@@ -19,6 +19,8 @@ elif app.config['ENV'] == 'production':
 else: 
     app.config.from_object(TestingConfig)
 
+google_maps_api_key = os.environ.get('GOOGLE_MAPS_API_KEY')
+
 connect_db(app)
 
 
@@ -155,7 +157,7 @@ def show_breweries(brewery_id):
     if brewery_model:
         brewery_reviews = Review.query.filter_by(brewery_id=brewery_model.id).order_by(Review.timestamp.desc()).all()
 
-    return render_template('brewery-details.html', brewery=brewery, brewery_reviews=brewery_reviews)
+    return render_template('brewery-details.html', brewery=brewery, brewery_reviews=brewery_reviews, google_maps_api_key=google_maps_api_key)
 
 
 @app.route('/')
