@@ -26,7 +26,10 @@
             <span><i class="fa-solid fa-star"></i></span>
             {% endfor %}
             <h5>{{ review.rating }}</h5>
-            <p>{{ review.description }}</p> 
+            <p>{{ review.description }}</p>
+            {% for photo in review.photos %}
+            <img class='review_photos' src="{{photo.photo_url}}" alt="review_photo"> 
+            {% endfor %}
             <p class="fst-italic">{{ review.user.username }} - {{review.timestamp}}</p>
         </div>
     

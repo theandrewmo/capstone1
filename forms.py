@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, TextAreaField, SelectField
+from wtforms import StringField, PasswordField, TextAreaField, SelectField, FileField, HiddenField
 from wtforms.validators import DataRequired, Email, Length
 
 class UserAddForm(FlaskForm):
@@ -32,5 +32,8 @@ class SearchTypeForm(FlaskForm):
 class ReviewForm(FlaskForm):
     """ Form for reviewing a brewery """
 
-    rating = SelectField('Rating')
-    description = TextAreaField('Description')
+    rating = SelectField('Rating', validators=[DataRequired()])
+    description = TextAreaField('Description', validators=[DataRequired()])
+    photo_url = HiddenField('Photo URL')
+    photo_file = FileField('Photo', render_kw={"onchange": "uploadImage(event)"})
+    

@@ -107,8 +107,8 @@ $(function() {
             breweryElement = $(`<p>${brewery.name}</p>`)
         }
         else {
-             breweryElement = `<h5><a href='/breweries/${brewery.id}'>${brewery.name}</a></h5>
-                <p>${brewery.city}, ${brewery.state}</p>`
+             breweryElement = `<div class='brewery_element'><h5><a href='/breweries/${brewery.id}'>${brewery.name}</a></h5>
+                <p>${brewery.address_1 ? brewery.address_1 + '.&nbsp;&nbsp;&nbsp;' : 'Brewery still in planning stages'+ '.&nbsp;&nbsp;&nbsp;'}<b>${brewery.city}</b>, <b>${brewery.state}</b></p></div>`
             }
         return breweryElement
     }
@@ -156,6 +156,7 @@ $(function() {
 
     $('#search_type').on('change', (e) => {
         let selection = e.target.value
+        $('.auto').empty()
         if($('#choice')) {$('#choice').remove()}
         $('#term').removeAttr('disabled').val('').removeClass('d-none')
         if (selection == 'by distance') {

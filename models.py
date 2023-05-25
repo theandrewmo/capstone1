@@ -32,7 +32,7 @@ def choice_list():
     return ['by keyword', 'by city', 'by distance', 'by name', 'by state', 'by type', 'get a random brewery']
 
 def rating_list():
-    return [None, 1, 2, 3, 4, 5]
+    return [5, 4, 3, 2, 1]
 
 class User(db.Model):
     """ User model """
@@ -172,3 +172,29 @@ class Review(db.Model):
     brewery = db.relationship("Brewery", backref='review') 
 
     user = db.relationship("User", backref='review')
+
+class Photo(db.Model):
+    """ Photo model """
+
+    __tablename__ = 'photos'
+
+    id = db.Column(db.Integer,
+                   primary_key=True)
+    
+    photo_url = db.Column(db.Text,
+                          nullable=False)
+    
+    user_id = db.Column(db.Integer,
+                        db.ForeignKey('users.id', ondelete='CASCADE'))
+    
+    brewery_id = db.Column(db.Integer,
+                        db.ForeignKey('breweries.id', ondelete='CASCADE'))
+    
+    review_id = db.Column(db.Integer,
+                          db.ForeignKey('reviews.id', ondelete='CASCADE'))
+
+    brewery = db.relationship("Brewery", backref='photos') 
+
+    user = db.relationship("User", backref='photos')
+
+    review = db.relationship("Review", backref='photos')
