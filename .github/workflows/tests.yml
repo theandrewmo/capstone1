@@ -1,0 +1,28 @@
+name: Run Tests
+
+on:
+  push:
+    branches:
+      - main  # or the branch you want to trigger tests on
+  pull_request:
+    branches:
+      - main  # or the branch you want to trigger tests on
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.7.16  # Replace with your desired Python version
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt  # If you have any dependencies
+
+      - name: Run tests
+        run: python test_runner.py
