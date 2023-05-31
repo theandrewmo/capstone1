@@ -25,6 +25,13 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt  # If you have any dependencies
 
+      - name: Grant repository access to github-actions[bot]
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git fetch
+          git branch --set-upstream-to=origin/main main
+
       - name: Run tests
         run: python test_runner.py
 
