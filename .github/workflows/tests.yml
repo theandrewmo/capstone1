@@ -11,7 +11,8 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-
+    env: 
+      DATABASE_URL: 'postgresql://urresvti:qMRkIgT4Um0yF3OQj6LO9Mrx2gWbN-pQ@mahmud.db.elephantsql.com/urresvti'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -26,3 +27,32 @@ jobs:
 
       - name: Run tests
         run: python test_runner.py
+
+      - name: Generate badge
+        id: generate-badge
+        run: |
+          # Add commands to determine the test status and generate the badge URL dynamically
+          if [ $? -eq 0 ]; then
+            # Test passed
+            echo "::set-output name=status::pass"
+          else
+            # Test failed
+            echo "::set-output name=status::fail"
+          fi
+
+      - name: Update README
+        run: |
+          # Add commands to update the README file with the generated badge URL
+          badge_status=${{ steps.generate-badge.outputs.status }}
+          # Generate the appropriate badge URL based on the test status using Shields.io or any other service
+          badge_url="https://img.shields.io/badge/Tests-$badge_status-green"
+
+          # Replace the existing badge URL in the README file with the generated one
+          sed -i "s|!\[Tests\](.*)|![Tests]($badge_url)|" README.md
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git commit -a -m "Update test status badge" --amend --no-edit
+          git push -f
