@@ -26,41 +26,27 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt  # If you have any dependencies
 
-      # - name: Grant repository access to github-actions[bot]
-      #   run: |
-      #     git config --local user.email "action@github.com"
-      #     git config --local user.name "GitHub Action"
-      #     git fetch
-      #     git branch --set-upstream-to=origin/main main
-
       - name: Run tests
         run: python test_runner.py
 
-      # - name: Generate badge
-      #   id: generate-badge
-      #   run: |
-      #     # Add commands to determine the test status and generate the badge URL dynamically
-      #     if [ $? -eq 0 ]; then
-      #       # Test passed
-      #       echo "::set-output name=status::pass"
-      #     else
-      #       # Test failed
-      #       echo "::set-output name=status::fail"
-      #     fi
+      - name: Determine test status
+        id: test-status
+        run: |
+          if [ $? -eq 0 ]; then
+            echo "::set-output name=status::pass"
+          else
+            echo "::set-output name=status::fail"
+          fi
 
-      # - name: Update README
-      #   run: |
-      #     # Add commands to update the README file with the generated badge URL
-      #     badge_status=${{ steps.generate-badge.outputs.status }}
-      #     # Generate the appropriate badge URL based on the test status using Shields.io or any other service
-      #     badge_url="https://img.shields.io/badge/Tests-$badge_status-green"
+      - name: Update README
+        run: |
+          test_status=${{ steps.test-status.outputs.status }}
 
-      #     # Replace the existing badge URL in the README file with the generated one
-      #     sed -i "s|!\[Tests\](.*)|![Tests]($badge_url)|" README.md
+          if [ "$test_status" = "pass" ]; then
+            badge_url="https://img.shields.io/badge/tests-passing-brightgreen.svg"
+          else
+            badge_url="https://img.shields.io/badge/tests-failing-red.svg"
+          fi
 
-      # - name: Commit and push changes
-      #   run: |
-      #     git config --local user.email "action@github.com"
-      #     git config --local user.name "GitHub Action"
-      #     git commit -a -m "Update test status badge" --amend --no-edit
-      #     git push -f
+          # Replace the existing badge URL in the README file with the generated one
+          sed -i "s|!\[Tests\](.*)|![Tests]($badge_url)|" README.md

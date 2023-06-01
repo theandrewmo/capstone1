@@ -1,4 +1,4 @@
-![Tests](https://img.shields.io/badge/tests-passing-brightgreen.svg)
+![Tests](https://img.shields.io/badge/tests-placeholder.svg)
 
 
 # HoppyHour Brewery Search App
