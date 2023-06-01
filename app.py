@@ -155,6 +155,9 @@ def show_breweries(brewery_id):
         response = requests.get(f'{BASE_URL}/{brewery_id}')
         if response.status_code == 200:
             brewery = response.json()
+        elif response.status_code == 404:
+            flash('Brewery not found', 'danger')
+            return redirect('/')
 
     except Exception as e:
         print(e)
@@ -206,6 +209,9 @@ def leave_review(brewery_id):
         response = requests.get(f'{BASE_URL}/{brewery_id}')
         if response.status_code == 200:
             brewery = response.json()
+        elif response.status_code == 404:
+            flash("Brewery not found", "danger")
+            return redirect("/")
 
     except Exception as e:
         return f'<p>error: {e}</p>'

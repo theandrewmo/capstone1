@@ -206,13 +206,13 @@ class RoutesTestCase(TestCase):
 
 
     def test_brewery_fail(self):
-         """ Ensure brewery route fails with proper error message when given an invalid brewery id """
+         """ Ensure brewery route fails with proper message when given an invalid brewery id """
 
          with self.client as c:
-            resp = c.get('/breweries/1')
+            resp = c.get('/breweries/1', follow_redirects=True)
 
             self.assertEqual(resp.status_code, 200)
-            self.assertIn('error', str(resp.data))
+            self.assertIn('Brewery not found', str(resp.data))
 
     def test_review(self):
         """ Ensure review route works """
@@ -237,12 +237,16 @@ class RoutesTestCase(TestCase):
             resp = c.get('/review/5128df48-79fc-4f0f-8b52-d06be54d0cec', follow_redirects=True)
 
             self.assertEqual(resp.status_code, 200)
-            self.assertIn('Leave a Review', str(resp.data))   
+            self.assertIn('Leave a Review', str(resp.data))  
+
+        # check for proper message when brewery / review not found
+
+        with self.client as c: 
 
             resp = c.get('/review/1', follow_redirects=True)
 
             self.assertEqual(resp.status_code, 200)
-            self.assertIn('error', str(resp.data)) 
+            self.assertIn('Brewery not found', str(resp.data)) 
         
         # get message that this brewery has already been reviewed if user has already reviewed brewery
 
