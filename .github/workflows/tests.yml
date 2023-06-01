@@ -49,4 +49,4 @@ jobs:
           fi
 
           # Replace the existing badge URL in the README file with the generated one
-          sed -i 's|!\[Tests\](.*)|![Tests]('"$badge_url"')|' README.md
+          sed -i "s|!\[Tests\](.*)|![Tests]($badge_url)|" README.md
