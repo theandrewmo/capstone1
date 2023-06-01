@@ -1,4 +1,5 @@
-![Tests](https://img.shields.io/badge/tests-placeholder.svg)
+![Tests](https://github.com/theandrewmo/hoppyhour/actions/workflows/tests.yml/badge.svg
+)
 
 
 # HoppyHour Brewery Search App

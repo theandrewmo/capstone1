@@ -29,24 +29,3 @@ jobs:
       - name: Run tests
         run: python test_runner.py
 
-      - name: Determine test status
-        id: test-status
-        run: |
-          if [ $? -eq 0 ]; then
-            echo "::set-output name=status::pass"
-          else
-            echo "::set-output name=status::fail"
-          fi
-
-      - name: Update README
-        run: |
-          test_status=${{ steps.test-status.outputs.status }}
-
-          if [ "$test_status" = "pass" ]; then
-            badge_url="https://img.shields.io/badge/tests-passing-brightgreen.svg"
-          else
-            badge_url="https://img.shields.io/badge/tests-failing-red.svg"
-          fi
-
-          # Replace the existing badge URL in the README file with the generated one
-          sed -i "s|!\[Tests\](.*)|![Tests]($badge_url)|" README.md
