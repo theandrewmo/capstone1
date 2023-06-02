@@ -18,7 +18,7 @@
                 {% if not g.user %}
                     <a href="/login" class="nav-link">Login</a>
                 {% else %}
-                    <a href="/edit" class="nav-link">Profile</a>
+                    <a href="/edit" class="nav-link">{{g.user.username}}</a>
                     <a href="/logout" class="nav-link">Logout</a>
                 {% endif %}
             </div>
@@ -29,7 +29,7 @@
         <div class="alert alert-{{ category }}">{{ message }}</div>
         {% endfor %}
     </div>
-    <div class="">
+    <div class="content">
         {% block content %}
         {% endblock %}
     </div>
