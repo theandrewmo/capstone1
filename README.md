@@ -76,7 +76,7 @@ To run the HoppyHour app locally, follow these steps:
      The app will be accessible at http://localhost:5000.
 
 ## Database Setup
-###HoppyHour uses a PostgreSQL database hosted on ElephantSQL. To set up the database:
+### HoppyHour uses a PostgreSQL database hosted on ElephantSQL. To set up the database:
 
 - Create a PostgreSQL database on ElephantSQL.
 
