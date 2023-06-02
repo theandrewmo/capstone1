@@ -13,6 +13,7 @@ class ProductionConfig(Config):
 
 class DevelopmentConfig(Config):
     DEBUG = True
+    SQLALCHEMY_DATABASE_URI = 'postgresql:///hoppyhour'
 
 class TestingConfig(Config):
     TESTING = True
