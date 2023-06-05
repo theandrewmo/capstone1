@@ -7,7 +7,7 @@ class UserAddForm(FlaskForm):
 
     username = StringField('Username', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Email()])
-    password = PasswordField('Password', validators=([Length(min=6)]))
+    password = PasswordField('Password', validators=[Length(min=6), DataRequired()])
     city = StringField('City')
     state = SelectField('State')
     postal_code = StringField('Postal Code')
@@ -36,4 +36,17 @@ class ReviewForm(FlaskForm):
     description = TextAreaField('Description', validators=[DataRequired()])
     photo_url = HiddenField('Photo URL')
     photo_file = FileField('Photo', render_kw={"onchange": "uploadImage(event)",'accept': 'image/*'})
+
+class ForgotPasswordForm(FlaskForm):
+    """ Form for fixing a forgotten password"""
+
+    email = StringField('Email', validators=[DataRequired(), Email()])
+
+class NewPasswordForm(FlaskForm):
+    """ Form for adding new password"""
+
+    new_password = PasswordField('New Password', validators=[Length(min=6), DataRequired()])
+    confirm_password = PasswordField('Confirm Password', validators=[Length(min=6), DataRequired()])
+
+
     
