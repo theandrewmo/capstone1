@@ -8,7 +8,7 @@ import os
 from unittest import TestCase
 from sqlalchemy import exc
 
-from models import db, User, Brewery, Review
+from models import db, User, Brewery, Review, generate_reset_token
 
 os.environ['DATABASE_URL'] = "postgresql:///hoppyhour-test"
 
@@ -164,6 +164,69 @@ class RoutesTestCase(TestCase):
             updated_user = User.query.filter_by(username='testuser5').first()
             self.assertIsNotNone(updated_user)
             self.assertEqual(updated_user.fav_type, 'nano')
+
+
+    def test_forgot_password(self):
+        """ Ensures forgot password works """
+
+        with self.client as c:
+            resp = c.get('/forgot_password', follow_redirects=True)
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn('Enter Email', str(resp.data))   
+
+        with self.client as c:
+            form_data =  {'email': 'testuser5@test.com'}
+            resp = c.post('/forgot_password', data=form_data, follow_redirects=True)
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn('Password reset email sent successfully.', str(resp.data))
+        
+        # test error message when user not in database
+        with self.client as c:
+            form_data =  {'email': 'notindatabase@fake.com'}
+            resp = c.post('/forgot_password', data=form_data, follow_redirects=True)
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn('User not found', str(resp.data))
+
+    
+    def test_reset_password(self):
+        """ Ensures reset password works """\
+        
+        test_user = User.query.filter_by(email='testuser5@test.com').first()
+        token = generate_reset_token(test_user)
+
+        with self.client as c:
+            resp = c.get('/reset_password/'+token, follow_redirects=True)
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn('Enter new password', str(resp.data))   
+
+        with self.client as c:
+            form_data =  {'new_password': 'newpassword', 'confirm_password': 'newpassword'}
+            resp = c.post('/reset_password/'+token, data=form_data, follow_redirects=True)
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn('Password reset successfully.', str(resp.data))
+        
+        # test error message when passwords don't match
+        with self.client as c:
+            form_data =  {'new_password': 'newpassword', 'confirm_password': 'doesntmatch'}
+            resp = c.post('/reset_password/'+token, data=form_data, follow_redirects=True)
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn('Passwords do not match.', str(resp.data))
+
+        # test error message when token is not valid
+        with self.client as c:
+            token = 'invalid'
+            form_data =  {'new_password': 'newpassword', 'confirm_password': 'doesntmatch'}
+            resp = c.post('/reset_password/'+token, data=form_data, follow_redirects=True)
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn('Invalid or expired token', str(resp.data))
+
 
     def test_brewery(self):
         """ Does brewery route work """
