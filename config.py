@@ -7,6 +7,11 @@ class Config(object):
     SECRET_KEY = os.environ.get('SECRET_KEY')
     GOOGLE_MAPS_API_KEY = os.environ.get('GOOGLE_MAPS_API_KEY')
     FIREBASE_API_KEY = os.environ.get('FIREBASE_API_KEY')
+    MAIL_SERVER = 'smtp-relay.sendinblue.com'
+    MAIL_PORT = 587
+    MAIL_USE_TLS = True
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
 
 class ProductionConfig(Config):
     WTF_CSRF_ENABLED = False
