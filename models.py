@@ -13,7 +13,7 @@ def connect_db(app):
     db.init_app(app)
 
 def states_list():
-    return ["", "Alaska", "Alabama", "Arkansas", "American Samoa", "Arizona", 
+    return ["Alaska", "Alabama", "Arkansas", "American Samoa", "Arizona", 
             "California", "Colorado", "Connecticut", "District ", "of Columbia", 
             "Delaware", "Florida", "Georgia", "Guam", "Hawaii", "Iowa", "Idaho", 
             "Illinois", "Indiana", "Kansas", "Kentucky", "Louisiana", "Massachusetts", 
@@ -25,7 +25,7 @@ def states_list():
             "Vermont", "Washington", "Wisconsin", "West Virginia", "Wyoming"]
 
 def type_list():
-    return ['', 'micro', 'nano', 'regional', 'brewpub', 'large', 'planning',
+    return ['micro', 'nano', 'regional', 'brewpub', 'large', 'planning',
             'bar', 'contract', 'proprietor']
 
 def choice_list():

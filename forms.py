@@ -35,5 +35,5 @@ class ReviewForm(FlaskForm):
     rating = SelectField('Rating', validators=[DataRequired()])
     description = TextAreaField('Description', validators=[DataRequired()])
     photo_url = HiddenField('Photo URL')
-    photo_file = FileField('Photo', render_kw={"onchange": "uploadImage(event)"})
+    photo_file = FileField('Photo', render_kw={"onchange": "uploadImage(event)",'accept': 'image/*'})
     

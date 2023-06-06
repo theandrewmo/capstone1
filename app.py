@@ -148,19 +148,25 @@ def get_user():
 @app.route('/breweries/<brewery_id>')
 def show_breweries(brewery_id):
 
+    brewery = None
+    brewery_reviews = []
+
     try: 
         response = requests.get(f'{BASE_URL}/{brewery_id}')
         if response.status_code == 200:
             brewery = response.json()
+        elif response.status_code == 404:
+            flash('Brewery not found', 'danger')
+            return redirect('/')
 
     except Exception as e:
         print(e)
         return f'<p>error: {e}</p>'
     
-    brewery_reviews = []
-    brewery_model = Brewery.query.filter_by(api_id=brewery['id']).first()
-    if brewery_model:
-        brewery_reviews = Review.query.filter_by(brewery_id=brewery_model.id).order_by(Review.timestamp.desc()).all()
+    if brewery:
+        brewery_model = Brewery.query.filter_by(api_id=brewery['id']).first()
+        if brewery_model:
+            brewery_reviews = Review.query.filter_by(brewery_id=brewery_model.id).order_by(Review.timestamp.desc()).all()
 
     return render_template('brewery-details.html', brewery=brewery, brewery_reviews=brewery_reviews, google_maps_api_key=google_maps_api_key)
 
@@ -203,6 +209,9 @@ def leave_review(brewery_id):
         response = requests.get(f'{BASE_URL}/{brewery_id}')
         if response.status_code == 200:
             brewery = response.json()
+        elif response.status_code == 404:
+            flash("Brewery not found", "danger")
+            return redirect("/")
 
     except Exception as e:
         return f'<p>error: {e}</p>'

@@ -14,7 +14,7 @@
 }
 
 .hero2 {
-    min-height: 20rem;
+    min-height: 26rem;
     background-image: url('https://images.unsplash.com/photo-1578575737417-7f4ca1df16cb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MzR8fGJyZXdlcnl8ZW58MHwwfDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60');
     background-size: cover;
 }
@@ -48,6 +48,7 @@
 
 .auto p:hover {
     background-color: rgb(134, 134, 134);
+    cursor: pointer;
 }
 
 #map {
