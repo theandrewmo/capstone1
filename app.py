@@ -2,7 +2,7 @@ import os, requests, json
 
 from flask import Flask, render_template, request, flash, redirect, session, g 
 from sqlalchemy.exc import IntegrityError
-from models import db, connect_db, User, Brewery, Review, states_list, type_list, choice_list, rating_list
+from models import db, connect_db, User, Brewery, Review, Photo, states_list, type_list, choice_list, rating_list
 from forms import UserAddForm, LoginForm, SearchForm, SearchTypeForm, ReviewForm
 from config import Config, DevelopmentConfig, ProductionConfig, TestingConfig
 
@@ -19,7 +19,8 @@ elif app.config['ENV'] == 'production':
 else: 
     app.config.from_object(TestingConfig)
 
-google_maps_api_key = os.environ.get('GOOGLE_MAPS_API_KEY')
+google_maps_api_key = app.config['GOOGLE_MAPS_API_KEY']
+firebase_api_key = app.config['FIREBASE_API_KEY']
 
 connect_db(app)
 
@@ -36,6 +37,10 @@ def add_user_to_g():
 
     else:
         g.user = None
+
+@app.context_processor
+def inject_firebase_api_key():
+    return {'firebase_api_key': app.config['FIREBASE_API_KEY']}
 
 def do_login(user):
     """ Log in user """
@@ -143,19 +148,25 @@ def get_user():
 @app.route('/breweries/<brewery_id>')
 def show_breweries(brewery_id):
 
+    brewery = None
+    brewery_reviews = []
+
     try: 
         response = requests.get(f'{BASE_URL}/{brewery_id}')
         if response.status_code == 200:
             brewery = response.json()
+        elif response.status_code == 404:
+            flash('Brewery not found', 'danger')
+            return redirect('/')
 
     except Exception as e:
         print(e)
         return f'<p>error: {e}</p>'
     
-    brewery_reviews = []
-    brewery_model = Brewery.query.filter_by(api_id=brewery['id']).first()
-    if brewery_model:
-        brewery_reviews = Review.query.filter_by(brewery_id=brewery_model.id).order_by(Review.timestamp.desc()).all()
+    if brewery:
+        brewery_model = Brewery.query.filter_by(api_id=brewery['id']).first()
+        if brewery_model:
+            brewery_reviews = Review.query.filter_by(brewery_id=brewery_model.id).order_by(Review.timestamp.desc()).all()
 
     return render_template('brewery-details.html', brewery=brewery, brewery_reviews=brewery_reviews, google_maps_api_key=google_maps_api_key)
 
@@ -183,6 +194,13 @@ def leave_review(brewery_id):
     if not g.user:
         flash("Access unauthorized. Please create a profile in order to leave a review.", "danger")
         return redirect("/")
+    
+    tbrewery = Brewery.query.filter_by(api_id=brewery_id).first()
+    if tbrewery:
+        already_reviewed = Review.query.filter_by(user_id=g.user.id, brewery_id=tbrewery.id).first()
+        if already_reviewed:
+            flash("You have already reviewed this brewery.", "danger")
+            return redirect("/")
 
     form = ReviewForm()
     form.rating.choices = rating_list()  
@@ -191,10 +209,12 @@ def leave_review(brewery_id):
         response = requests.get(f'{BASE_URL}/{brewery_id}')
         if response.status_code == 200:
             brewery = response.json()
+        elif response.status_code == 404:
+            flash("Brewery not found", "danger")
+            return redirect("/")
 
     except Exception as e:
-        print(e)
-        return '<p>error</p>'
+        return f'<p>error: {e}</p>'
 
     if form.validate_on_submit():
         existing_brewery = Brewery.query.filter_by(api_id=brewery_id).first()
@@ -224,6 +244,15 @@ def leave_review(brewery_id):
                         user_id=g.user.id)
         db.session.add(review)
         db.session.commit()
+
+        photo_url = form.photo_url.data
+        if photo_url:
+            new_photo = Photo(photo_url=photo_url,
+                            user_id=g.user.id,
+                            brewery_id=existing_id,
+                            review_id=review.id)
+            db.session.add(new_photo)
+            db.session.commit()
         return redirect(f'/breweries/{brewery_id}')
 
     return render_template('review-form.html', form=form)
