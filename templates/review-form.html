@@ -18,7 +18,11 @@
                 {{ field(class='form-control') }}
                 {% endif %}
             {% endfor %}
-            <button class="btn btn-primary my-2">Save changes!</button>
+            <div id="uploadProgressContainer" style="display: none;">
+                <div id="uploadProgressBar"></div>
+                <p id="uploadStatus"></p>   
+            </div>         
+            <button class="btn btn-primary my-2" id="saveReview">Save changes!</button>
             <a href="/" class="btn btn-secondary">Cancel</a>
         </form>
     </div>
