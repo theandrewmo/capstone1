@@ -55,9 +55,6 @@ $(function() {
     /** add event listener for submission of the search form with callback function searchItem */
 
     $('.find-brewery').on('submit', searchItem)
-
-    /** store timeout identifier */
-
  
     /** set up event handler for keyup on input field, checks whether search type is by keyword
      * calls debounced function runAutoComplete
@@ -312,13 +309,13 @@ $(function() {
 
     async function initMap() {
     const { Map } = await google.maps.importLibrary("maps");
-    let location = {lat: parseFloat($('#latitude').val()), lng: parseFloat($('#longitude').val())}
+    const location = {lat: parseFloat($('#latitude').val()), lng: parseFloat($('#longitude').val())}
     if (location.lat && location.lng) {
         map = new Map($('#map')[0], {
             center: location,
             zoom: 12,
         });
-        let marker = new google.maps.Marker({position:location, map:map})
+        const marker = new google.maps.Marker({position:location, map})
     }
     else {
         $('#map').addClass('d-flex flex-column border border-primary border-2 align-items-center justify-content-center')
