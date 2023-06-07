@@ -1,5 +1,5 @@
-![Tests](https://github.com/theandrewmo/hoppyhour/actions/workflows/tests.yml/badge.svg
-)
+[![Tests](https://github.com/theandrewmo/hoppyhour/actions/workflows/tests.yml/badge.svg)](https://github.com/theandrewmo/hoppyhour/actions/workflows/tests.yml)
+
 
 
 # HoppyHour Brewery Search App
