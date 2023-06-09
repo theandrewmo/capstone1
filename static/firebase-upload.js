@@ -1,11 +1,21 @@
 import { ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
 import storage from './firebase-init.js'
 
+/* generate a unique File name */
+function generateUniqueName(original) {
+    const uniqueId = Date.now()
+    const randomString = Math.random().toString(36).substring(2, 8);
+    const fileExtension = original.split('.').pop();
+    const uniqueName = `${uniqueId}-${randomString}.${fileExtension}`;
+    return uniqueName;
+}
+
+/* function for uploading image to firebase */
 export function uploadImage(event) {
     const file = event.target.files[0]; // Get the uploaded file
-
+    const uniqueId = generateUniqueName(file.name)
     const storageRef = ref(storage);
-    const fileRef = ref(storage, file.name);
+    const fileRef = ref(storage, uniqueId);
     const uploadTask = uploadBytesResumable(fileRef, file);
 
     // Create references for relevant elements 
@@ -24,7 +34,7 @@ export function uploadImage(event) {
         uploadProgressContainer.classList.remove('d-none');
         uploadProgressBar.style.width = progress + '%';
         uploadStatus.innerText = 'Uploading: ' + Math.round(progress) + '%';
-        
+
         switch (snapshot.state) {
             case 'paused':
                 console.log('Upload is paused');
