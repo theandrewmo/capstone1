@@ -28,7 +28,7 @@
             <h5>{{ review.rating }}</h5>
             <p>{{ review.description }}</p>
             {% for photo in review.photos %}
-            <img class='review_photos' src="{{photo.photo_url}}" alt="review_photo"> 
+            <img class='review-photos' src="{{photo.photo_url}}" alt="review-photo" loading="lazy"> 
             {% endfor %}
             <p class="fst-italic">{{ review.user.username }} - {{review.timestamp}}</p>
         </div>
