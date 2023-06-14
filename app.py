@@ -26,6 +26,7 @@ else:
 google_maps_api_key = app.config['GOOGLE_MAPS_API_KEY']
 firebase_api_key = app.config['FIREBASE_API_KEY']
 mail_username = app.config['MAIL_USERNAME']
+deploy_url = app.config['DEPLOY_URL']
 
 mail = Mail(app)
 
@@ -162,7 +163,7 @@ def forgot_password():
             token = generate_reset_token(user)
 
             msg = Message('Hello, Here is your reset token', sender=mail_username, recipients=[user.email])
-            msg.body = f"http://127.0.0.1:5000/reset_password/{token}"
+            msg.body = f"{deploy_url}/reset_password/{token}"
             mail.send(msg)
 
             flash('Password reset email sent successfully.', 'success')
