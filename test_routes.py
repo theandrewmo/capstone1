@@ -163,7 +163,6 @@ class RoutesTestCase(TestCase):
             self.assertIsNotNone(updated_user)
             self.assertEqual(updated_user.fav_type, 'nano')
 
-
     def test_forgot_password(self):
         """ Ensures forgot password works """
 
@@ -180,6 +179,7 @@ class RoutesTestCase(TestCase):
             self.assertEqual(resp.status_code, 200)
             self.assertIn('Password reset email sent successfully.', str(resp.data))
         
+    def test_forgot_password_fail(self):
         # test error message when user not in database
         with self.client as c:
             form_data =  {'email': 'notindatabase@fake.com'}
@@ -188,9 +188,8 @@ class RoutesTestCase(TestCase):
             self.assertEqual(resp.status_code, 200)
             self.assertIn('User not found', str(resp.data))
 
-    
     def test_reset_password(self):
-        """ Ensures reset password works """\
+        """ Ensures reset password works """
         
         test_user = User.query.filter_by(email='testuser5@test.com').first()
         token = generate_reset_token(test_user)
@@ -224,7 +223,6 @@ class RoutesTestCase(TestCase):
 
             self.assertEqual(resp.status_code, 200)
             self.assertIn('Invalid or expired token', str(resp.data))
-
 
     def test_brewery(self):
         """ Does brewery route work """
@@ -264,7 +262,6 @@ class RoutesTestCase(TestCase):
 
             self.assertEqual(resp.status_code, 200)
             self.assertIn('this is a test review', str(resp.data))
-
 
     def test_brewery_fail(self):
          """ Ensure brewery route fails with proper message when given an invalid brewery id """

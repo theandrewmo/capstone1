@@ -2,7 +2,7 @@
 {% block content %}
 
 <div class="row justify-content-center text-white hero3"> 
-    <div class="col-md-7 my-4">
+    <div class="col-8 col-md-4 col-lg-3 my-4">
         <h2 class="text-center">Edit Profile</h2>
         <form method="POST">
             {{ form.hidden_tag() }}
@@ -18,8 +18,8 @@
                 {{ field(class='form-control') }}
                 {% endif %}
             {% endfor %}
-            <button class="btn btn-primary my-2">Save changes!</button>
             <a href="/" class="btn btn-secondary">Cancel</a>
+            <button class="btn btn-primary my-2">Save</button>
         </form>
     </div>
 </div>

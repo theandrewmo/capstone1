@@ -58,6 +58,17 @@ $(function() {
     /** add event listener for submission of the search form with callback function searchItem */
 
     $('.find-brewery').on('submit', searchItem)
+
+    /** add click listener to call a function that checks if reset passwords are equal */
+
+    $('#password-reset').on('submit', checkEqual)
+
+    /** sets a timer to remove flashed messages after a given time has elapsed */
+    if ($('#messages').length) {
+        setTimeout(function() {
+          $('#messages').empty();
+        }, 2000);
+      }
  
     /** set up event handler for keyup on input field, checks whether search type is by keyword
      * calls debounced function runAutoComplete
@@ -78,6 +89,16 @@ $(function() {
             timeoutId = setTimeout(()=> {
                 func(...args)
             }, delay)
+        }
+    }
+
+    /** function that checks if reset passwords are equal */
+    function checkEqual(e) {
+        $('#match-message').empty()
+        if ($('#new_password').val() !== $('#confirm_password').val()) {
+            e.preventDefault()
+            $('#confirm_password').css('border', 'solid 1px red')
+            $('#match-message').text('passwords do not match').css('color', 'red')
         }
     }
 

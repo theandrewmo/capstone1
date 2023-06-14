@@ -17,12 +17,14 @@
     min-height: 15rem;
     background-image: url('https://images.unsplash.com/photo-1578575737417-7f4ca1df16cb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MzR8fGJyZXdlcnl8ZW58MHwwfDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60');
     background-size: cover;
+    background-position: center;
 }
 
 .hero3 {
     min-height: 25rem;
     background-image: url('https://images.unsplash.com/photo-1597822738124-151fb72dcb79?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80');
     background-size: cover;
+    background-position: center;
 }
 
 .find-brewery {
