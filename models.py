@@ -34,6 +34,10 @@ def choice_list():
 def rating_list():
     return [5, 4, 3, 2, 1]
 
+def format_datetime(timestamp):
+    formatted_timestamp = timestamp.strftime('%B %d, %Y %I:%M %p')
+    return formatted_timestamp
+
 class User(db.Model):
     """ User model """
 

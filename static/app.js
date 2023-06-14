@@ -52,6 +52,9 @@ $(function() {
 
     $('#auto').on('click', grabItem)
 
+    /** adds listener for when user clicks out of autocomplete and removes autocomplete search results */
+    document.addEventListener('click', ()=> $('#auto').empty())
+
     /** add event listener for submission of the search form with callback function searchItem */
 
     $('.find-brewery').on('submit', searchItem)

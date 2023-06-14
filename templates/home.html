@@ -1,21 +1,20 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="row justify-content-center text-center hero"> 
-    <div class="main-search col-md-7 my-3">
-        <h2 class="text-white heading">Find A Brewery 
-            <div class="my-3">  
-                <form method="POST" class="selector">
-                    {{ form.hidden_tag() }}
+    <div class="main-search col-6 col-md-4 col-lg-3 my-3">
+        <h2 class="text-white heading">Find A Brewery</h2> 
+        <div class="my-3">  
+            <form method="POST" class="selector">
+                {{ form.hidden_tag() }}
 
-                    {% for field in form if field.widget.input_type != 'hidden' %}
-                        {% for error in field.errors %}
-                        <span class="text-danger">{{error}}</span>
-                        {% endfor %}
-                        {{ field(placeholder=field.label.text, class='form-select text-center') }}
+                {% for field in form if field.widget.input_type != 'hidden' %}
+                    {% for error in field.errors %}
+                    <span class="text-danger">{{error}}</span>
                     {% endfor %}
-                </form>
-            </div>
-        </h2>
+                    {{ field(placeholder=field.label.text, class='form-select text-center') }}
+                {% endfor %}
+            </form>
+        </div>
         <div class="my-3">
             <form class="find-brewery">
                 {{ form2.hidden_tag() }}
@@ -32,11 +31,11 @@
         </div> 
     </div>
 </div>
-<div class="container text-center my-4" id="recent-reviews"> 
+<div class="container text-center my-4 col-lg-6" id="recent-reviews"> 
     <h4 class="mt-4" id="recent-reviews-header">Recent Reviews</h4>
     <div class="">
         {% for review in recent_reviews %}
-        <div class="my-5 mx-2 p-1 bg-light border border-dark rounded">
+        <div class="my-3 mx-2 p-1 bg-light border border-dark rounded">
             <a href="/breweries/{{ review.brewery.api_id }}"><h5>{{ review.brewery.name }}</h5></a>
 
             {% for num in range(review.rating) %}
@@ -46,7 +45,7 @@
             {% for photo in review.photos %}
             <img class='review-photos' src="{{photo.photo_url}}" alt="review-photo" loading="lazy"> 
             {% endfor %}
-            <p class="fst-italic">{{ review.user.username }} - {{review.timestamp}}</p>
+            <p class="fst-italic">{{ review.user.username }} - {{ review.timestamp|datetime }}</p>
         </div>
         {% endfor %}
     </div>

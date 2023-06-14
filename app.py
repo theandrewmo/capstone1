@@ -2,10 +2,11 @@ import os, requests, json
 
 from flask import Flask, render_template, request, flash, redirect, session, g 
 from sqlalchemy.exc import IntegrityError
-from models import db, connect_db, User, Brewery, Review, Photo, states_list, type_list, choice_list, rating_list
+from models import db, connect_db, User, Brewery, Review, Photo, states_list, type_list, choice_list, rating_list, format_datetime
 from forms import UserAddForm, LoginForm, SearchForm, SearchTypeForm, ReviewForm
 from config import Config, DevelopmentConfig, ProductionConfig, TestingConfig
 from flask_migrate import Migrate
+from jinja2 import Environment
 
 CURR_USER_KEY = 'curr_user'
 BASE_URL = 'https://api.openbrewerydb.org/v1/breweries'
@@ -22,6 +23,8 @@ else:
 
 google_maps_api_key = app.config['GOOGLE_MAPS_API_KEY']
 firebase_api_key = app.config['FIREBASE_API_KEY']
+
+app.jinja_env.filters['datetime'] = format_datetime
 
 connect_db(app)
 migrate = Migrate(app, db)
