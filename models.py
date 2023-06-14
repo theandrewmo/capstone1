@@ -1,8 +1,10 @@
 """ SQLAlchemy models for HoppyHour """
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
+import random
+import string
 
 bcrypt = Bcrypt()
 db = SQLAlchemy()
@@ -34,9 +36,33 @@ def choice_list():
 def rating_list():
     return [5, 4, 3, 2, 1]
 
+def generate_reset_token(user):
+    token = ''.join(random.choices(string.ascii_letters + string.digits, k=20))
+    expiration = datetime.utcnow() + timedelta(hours=1)  
+
+    user.reset_token = token
+    user.reset_token_expiration = expiration
+    db.session.commit()
+
+    return token
+
+def verify_reset_token(token):
+    user = User.query.filter_by(reset_token=token).first()
+
+    if user and user.reset_token_expiration > datetime.utcnow():
+        return user
+
+    return None
+
+def hash_password(password):
+    hashed_password = bcrypt.generate_password_hash(password).decode('UTF-8')
+
+    return hashed_password
+
 def format_datetime(timestamp):
     formatted_timestamp = timestamp.strftime('%B %d, %Y %I:%M %p')
     return formatted_timestamp
+
 
 class User(db.Model):
     """ User model """
@@ -64,6 +90,10 @@ class User(db.Model):
     postal_code = db.Column(db.String(10))
 
     fav_type = db.Column(db.String(30))
+
+    reset_token = db.Column(db.String(255))
+
+    reset_token_expiration = db.Column(db.DateTime)
 
     def __repr__(self):
         return f'<User {self.username} {self.email}>'

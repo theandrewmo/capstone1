@@ -1,9 +1,10 @@
 import os, requests, json
 
 from flask import Flask, render_template, request, flash, redirect, session, g 
+from flask_mail import Mail, Message
 from sqlalchemy.exc import IntegrityError
-from models import db, connect_db, User, Brewery, Review, Photo, states_list, type_list, choice_list, rating_list, format_datetime
-from forms import UserAddForm, LoginForm, SearchForm, SearchTypeForm, ReviewForm
+from models import db, connect_db, User, Brewery, Review, Photo, states_list, type_list, choice_list, rating_list, format_datetime, generate_reset_token, verify_reset_token, hash_password
+from forms import UserAddForm, LoginForm, SearchForm, SearchTypeForm, ReviewForm, ForgotPasswordForm, NewPasswordForm
 from config import Config, DevelopmentConfig, ProductionConfig, TestingConfig
 from flask_migrate import Migrate
 from jinja2 import Environment
@@ -14,6 +15,7 @@ BASE_URL = 'https://api.openbrewerydb.org/v1/breweries'
 app = Flask(__name__)
 app.app_context().push()
 
+
 if app.config['ENV'] == 'development':
     app.config.from_object(DevelopmentConfig)
 elif app.config['ENV'] == 'production':
@@ -23,6 +25,9 @@ else:
 
 google_maps_api_key = app.config['GOOGLE_MAPS_API_KEY']
 firebase_api_key = app.config['FIREBASE_API_KEY']
+mail_username = app.config['MAIL_USERNAME']
+
+mail = Mail(app)
 
 app.jinja_env.filters['datetime'] = format_datetime
 
@@ -144,6 +149,54 @@ def get_user():
             return redirect('/')
     
     return render_template('user-detail.html', form=form)
+
+@app.route('/forgot_password', methods=['GET', 'POST'])
+def forgot_password():
+
+    form = ForgotPasswordForm()
+    if request.method == 'POST':
+        email = request.form['email']
+
+        user = User.query.filter_by(email=email).first()
+        if user:
+            token = generate_reset_token(user)
+
+            msg = Message('Hello, Here is your reset token', sender=mail_username, recipients=[user.email])
+            msg.body = f"http://127.0.0.1:5000/reset_password/{token}"
+            mail.send(msg)
+
+            flash('Password reset email sent successfully.', 'success')
+
+        else: 
+            flash('User not found', 'danger')
+
+    return render_template('forgot_password.html', form=form)
+
+@app.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+
+    form = NewPasswordForm()
+    user = verify_reset_token(token)
+    if user:
+        if request.method == 'POST':
+            new_password = request.form['new_password']
+            confirm_password = request.form['confirm_password']
+
+            if new_password == confirm_password:
+                user.password = hash_password(new_password)
+                db.session.commit()
+
+                flash('Password reset successfully.', 'success')
+                return redirect('/login')
+
+            flash('Passwords do not match.', 'danger')
+
+        return render_template('reset_password.html', form=form)
+
+    else: 
+        flash('Invalid or expired token')
+    
+    return render_template('reset_password.html', form=form)
 
 
 ##############################################################################
