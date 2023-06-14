@@ -13,6 +13,7 @@ class Config(object):
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     DEPLOY_URL = os.environ.get('DEPLOY_URL')
+    MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER')
 
 class ProductionConfig(Config):
     WTF_CSRF_ENABLED = False
