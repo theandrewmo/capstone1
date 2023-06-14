@@ -1,5 +1,5 @@
-![Tests](https://github.com/theandrewmo/hoppyhour/actions/workflows/tests.yml/badge.svg
-)
+[![Tests](https://github.com/theandrewmo/hoppyhour/actions/workflows/tests.yml/badge.svg)](https://github.com/theandrewmo/hoppyhour/actions/workflows/tests.yml)
+
 
 
 # HoppyHour Brewery Search App
@@ -35,7 +35,7 @@ To run the HoppyHour app locally, follow these steps:
 1. Clone the repository:
    
   <pre>
-  git clone (https://github.com/theandrewmo/hoppyhour)
+  git clone https://github.com/theandrewmo/hoppyhour
   cd HoppyHour
   </pre>
    
@@ -78,17 +78,19 @@ To run the HoppyHour app locally, follow these steps:
 ## Database Setup
 ### HoppyHour uses a PostgreSQL database hosted on ElephantSQL. To set up the database:
 
-- Create a PostgreSQL database on ElephantSQL.
+- Create a PostgreSQL database on ElephantSQL or equivalent.
 
-- Update the DATABASE_URL variable in the .env file with the connection URL for your database.
+- Update the DATABASE_URL variable with the connection URL for your database.
 
 - Run the database migration to create the necessary tables:
 
   <pre>
+  flask db init
+  flask db migrate --message 'Initial migration'
   flask db upgrade
   </pre>
   
-  This will create the required tables in the database.
+  This will create the required tables in the database. 
   
 ## Contributing
 Contributions to HoppyHour are welcome! If you find any bugs or have suggestions for new features, please open an issue or submit a pull request. Make sure to follow the existing code style and conventions.

@@ -3,9 +3,11 @@ import os, requests, json
 from flask import Flask, render_template, request, flash, redirect, session, g 
 from flask_mail import Mail, Message
 from sqlalchemy.exc import IntegrityError
-from models import db, connect_db, User, Brewery, Review, Photo, states_list, type_list, choice_list, rating_list, generate_reset_token, verify_reset_token, hash_password
+from models import db, connect_db, User, Brewery, Review, Photo, states_list, type_list, choice_list, rating_list, format_datetime, generate_reset_token, verify_reset_token, hash_password
 from forms import UserAddForm, LoginForm, SearchForm, SearchTypeForm, ReviewForm, ForgotPasswordForm, NewPasswordForm
 from config import Config, DevelopmentConfig, ProductionConfig, TestingConfig
+from flask_migrate import Migrate
+from jinja2 import Environment
 
 CURR_USER_KEY = 'curr_user'
 BASE_URL = 'https://api.openbrewerydb.org/v1/breweries'
@@ -27,8 +29,10 @@ mail_username = app.config['MAIL_USERNAME']
 
 mail = Mail(app)
 
-connect_db(app)
+app.jinja_env.filters['datetime'] = format_datetime
 
+connect_db(app)
+migrate = Migrate(app, db)
 
 ##############################################################################
 # User signup/login/logout/edit

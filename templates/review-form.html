@@ -2,7 +2,7 @@
 {% block content %}
 
 <div class="row justify-content-center text-white hero3"> 
-    <div class="col-md-7 my-4">
+    <div class="col-10 col-md-8 col-lg-6 my-4">
         <h2 class="text-center">Leave a Review</h2>
         <form method="POST">
             {{ form.hidden_tag() }}
@@ -18,7 +18,11 @@
                 {{ field(class='form-control') }}
                 {% endif %}
             {% endfor %}
-            <button class="btn btn-primary my-2">Save changes!</button>
+            <div id="upload-progress-container" class='d-none'>
+                <div id="upload-progress-bar"></div>
+                <p id="upload-status"></p>   
+            </div>         
+            <button class="btn btn-primary my-2" id="save-review">Save changes!</button>
             <a href="/" class="btn btn-secondary">Cancel</a>
         </form>
     </div>

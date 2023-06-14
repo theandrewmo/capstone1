@@ -10,8 +10,6 @@ from sqlalchemy import exc
 
 from models import db, User, Brewery, Review, generate_reset_token
 
-os.environ['DATABASE_URL'] = "postgresql:///hoppyhour-test"
-
 from app import app, CURR_USER_KEY
 
 db.create_all()

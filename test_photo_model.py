@@ -10,8 +10,6 @@ from sqlalchemy import exc
 
 from models import db, User, Brewery, Review, Photo
 
-os.environ['DATABASE_URL'] = "postgresql:///hoppyhour-test"
-
 from app import app
 
 db.create_all()
