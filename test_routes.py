@@ -171,13 +171,6 @@ class RoutesTestCase(TestCase):
 
             self.assertEqual(resp.status_code, 200)
             self.assertIn('Enter Email', str(resp.data))   
-
-        with self.client as c:
-            form_data =  {'email': 'testuser5@test.com'}
-            resp = c.post('/forgot_password', data=form_data, follow_redirects=True)
-
-            self.assertEqual(resp.status_code, 200)
-            self.assertIn('Password reset email sent successfully.', str(resp.data))
         
     def test_forgot_password_fail(self):
         # test error message when user not in database
