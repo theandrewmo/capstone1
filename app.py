@@ -7,7 +7,6 @@ from models import db, connect_db, User, Brewery, Review, Photo, states_list, ty
 from forms import UserAddForm, LoginForm, SearchForm, SearchTypeForm, ReviewForm, ForgotPasswordForm, NewPasswordForm
 from config import Config, DevelopmentConfig, ProductionConfig, TestingConfig
 from flask_migrate import Migrate
-from jinja2 import Environment
 
 CURR_USER_KEY = 'curr_user'
 BASE_URL = 'https://api.openbrewerydb.org/v1/breweries'
