@@ -6,7 +6,10 @@
 
 HoppyHour is a brewery search application built using Python, Flask, WTForms, Jinja, SQLAlchemy, and JavaScript. The app allows users to search for breweries and discover their information such as location, ratings, and reviews.
 
-![HoppyHour](https://github.com/theandrewmo/hoppyhour/blob/main/main.png?raw=true)
+
+## Overview and Demo
+
+[![Everything Is AWESOME](https://github.com/theandrewmo/hoppyhour/blob/8afbda570ffa7323a4424abecb84cb0ea6afbefc/static/Screenshot%202023-06-20%20at%205.58.28%20PM.png)](https://youtu.be/I4BUodji5i8)
 
 ## Features
 
